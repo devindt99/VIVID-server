@@ -23,5 +23,8 @@ router
     .get(foodsController.findFoodByName)
     .put(foodsController.updateFood)
     .delete(foodsController.removeFood);
+router
+    .route("/:food_name/logs")
+    .get(foodsController.findLogsByFood);
 
 module.exports = router;

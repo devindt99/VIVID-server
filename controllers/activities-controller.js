@@ -167,6 +167,15 @@ const removeActivityLog = async (req, res) => {
   }
 };
 
+const findLogsByActivity = async (req, res) => {
+  try {
+    const logs = await knex("activities_logs").where({ activity_name: req.params.activity_name });
+    res.json(logs); // Send logs back to the client as JSON response
+  } catch (err) {
+    res.status(500).json({ message: `Unable to find logs with activity name: ${err.message}` });
+  }
+};
+
 
 
 module.exports = {
@@ -180,4 +189,5 @@ module.exports = {
   findActivityLogById,
   updateActivityLog,
   removeActivityLog,
+  findLogsByActivity,
 };

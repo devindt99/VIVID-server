@@ -24,4 +24,7 @@ router
     .put(activitiesController.updateActivity)
     .delete(activitiesController.removeActivity);
 
+router
+    .route("/:activity_name/logs")
+    .get(activitiesController.findLogsByActivity);
 module.exports = router;

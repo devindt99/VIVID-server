@@ -147,6 +147,15 @@ const removeFeelingLog = async (req, res) => {
     res.status(500).json({ message: `Unable to delete feeling log: ${err}` });
   }
 };
+const findLogsByFeeling = async (req, res) => {
+  try {
+    const logs = await knex("feelings_logs").where({ feeling_name: req.params.feeling_name });
+    res.json(logs); // Send logs back to the client as JSON response
+  } catch (err) {
+    res.status(500).json({ message: `Unable to find logs with feeling name: ${err.message}` });
+  }
+};
+
 
 module.exports = {
   listFeelings,
@@ -159,4 +168,5 @@ module.exports = {
   findFeelingLogById,
   updateFeelingLog,
   removeFeelingLog,
+  findLogsByFeeling,
 };

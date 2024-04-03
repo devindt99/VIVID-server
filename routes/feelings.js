@@ -26,4 +26,8 @@ router
     .put(feelingsController.updateFeeling)
     .delete(feelingsController.removeFeeling);
 
+    router
+    .route("/:feeling_name/logs")
+    .get(feelingsController.findLogsByFeeling);
+
 module.exports = router;

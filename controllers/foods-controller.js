@@ -157,7 +157,15 @@ const removeFoodLog = async (req, res) => {
   }
 };
 
-
+const findLogsByFood = async (req, res) => {
+    try {
+      const logs = await knex("foods_logs").where({ food_name: req.params.food_name });
+      res.json(logs); // Send logs back to the client as JSON response
+    } catch (err) {
+      res.status(500).json({ message: `Unable to find logs with food name: ${err.message}` });
+    }
+  };
+  
 
 module.exports = {
   listFoods,
@@ -170,4 +178,5 @@ module.exports = {
   findFoodLogById,
   updateFoodLog,
   removeFoodLog,
+  findLogsByFood,
 };
