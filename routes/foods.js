@@ -27,4 +27,13 @@ router
     .route("/:food_name/logs")
     .get(foodsController.findLogsByFood);
 
+router
+    .route("/:food_name/logs/this_month")
+    .get(foodsController.findSumOfQuantityByFoodLast30Days);
+
+router
+    .route("/:food_name/logs/last_month")
+    .get(foodsController.findSumOfQuantityByFoodBetween31And60Days);
+
+
 module.exports = router;

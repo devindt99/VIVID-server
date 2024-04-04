@@ -147,12 +147,93 @@ const removeFeelingLog = async (req, res) => {
     res.status(500).json({ message: `Unable to delete feeling log: ${err}` });
   }
 };
+
 const findLogsByFeeling = async (req, res) => {
   try {
     const logs = await knex("feelings_logs").where({ feeling_name: req.params.feeling_name });
     res.json(logs); // Send logs back to the client as JSON response
   } catch (err) {
     res.status(500).json({ message: `Unable to find logs with feeling name: ${err.message}` });
+  }
+};
+
+
+const findLogsByFeelingLast30Days = async (req, res) => {
+  try {
+    const logs = await knex('feelings_logs')
+      .where({
+        feeling_name: req.params.feeling_name,
+      })
+      .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+      .select('*');
+
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: `Unable to find logs with feeling name within the last 30 days: ${error.message}` });
+  }
+};
+
+
+
+const getFeelingLogsLast30Days = async (req, res) => {
+  try {
+    const logs = await knex('feeling_logs')
+      .where('created_at', '>=', knex.raw('CURRENT_DATE - INTERVAL \'30 days\''))
+      .select('*');
+
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: `Unable to retrieve feeling logs: ${error.message}` });
+  }
+};
+
+const findLogsByFeelingBetween31And60Days = async (req, res) => {
+  try {
+    const logs = await knex('feelings_logs')
+      .where({
+        feeling_name: req.params.feeling_name,
+      })
+      .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 60 DAY)'))
+      .andWhere('created_at', '<', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+      .select('*');
+
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: `Unable to find logs with feeling name between days 31 and 60: ${error.message}` });
+  }
+};
+
+
+const findSumOfDurationByFeelingLast30Days = async (req, res) => {
+  try {
+    const sumOfDuration = await knex('feelings_logs')
+      .where({
+        feeling_name: req.params.feeling_name,
+      })
+      .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+      .sum('duration as total_duration')
+      .first();
+
+    res.json(sumOfDuration);
+  } catch (error) {
+    res.status(500).json({ message: `Unable to find the sum of duration with feeling name for the last 30 days: ${error.message}` });
+  }
+};
+
+const findSumOfDurationByFeelingBetween31And60Days = async (req, res) => {
+  try {
+    const sumOfDuration = await knex('feelings_logs')
+      .where({
+        feeling_name: req.params.feeling_name,
+      })
+      .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 60 DAY)'))
+      .andWhere('created_at', '<', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+      .sum('duration as total_duration')
+      .first();
+
+    res.json(sumOfDuration);
+  } catch (error) {
+    res.status(500).json({ message: `Unable to find the sum of duration with feeling name between days 31 and 60: ${error.message}` });
   }
 };
 
@@ -169,4 +250,9 @@ module.exports = {
   updateFeelingLog,
   removeFeelingLog,
   findLogsByFeeling,
+  getFeelingLogsLast30Days,
+  findLogsByFeelingLast30Days,
+  findLogsByFeelingBetween31And60Days,
+  findSumOfDurationByFeelingLast30Days,
+  findSumOfDurationByFeelingBetween31And60Days,
 };

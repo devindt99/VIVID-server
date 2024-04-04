@@ -1,34 +1,32 @@
-require("dotenv").config();
-
 exports.seed = function(knex) {
   console.log('Starting activities logs seed file...');
 
-  // Define the entries to insert for activities logs
+  // Define the entries to insert for activities logs with a mix of dates within the last 60 days
   const entries = [
     { 
       activity_name: 'Running', 
       duration: 30, 
-      created_at: knex.fn.now() 
+      created_at: knex.raw('CURRENT_DATE - INTERVAL ? DAY', [20]) 
     },
     { 
       activity_name: 'Cycling', 
       duration: 45, 
-      created_at: knex.fn.now() 
+      created_at: knex.raw('CURRENT_DATE - INTERVAL ? DAY', [40]) 
     },
     { 
       activity_name: 'Swimming', 
       duration: 60, 
-      created_at: knex.fn.now() 
+      created_at: knex.raw('CURRENT_DATE - INTERVAL ? DAY', [55]) 
     },
     { 
       activity_name: 'Reading', 
       duration: 120, 
-      created_at: knex.fn.now() 
+      created_at: knex.raw('CURRENT_DATE - INTERVAL ? DAY', [10]) 
     },
     { 
       activity_name: 'Drawing', 
       duration: 90, 
-      created_at: knex.fn.now() 
+      created_at: knex.raw('CURRENT_DATE - INTERVAL ? DAY', [30]) 
     }
     // Add more activity logs as needed
   ];

@@ -176,6 +176,40 @@ const findLogsByActivity = async (req, res) => {
   }
 };
 
+const findSumOfDurationByActivityLast30Days = async (req, res) => {
+  console.log("sum called");
+  try {
+    const sumOfDuration = await knex('activities_logs')
+      .where({
+        activity_name: req.params.activity_name,
+      })
+      .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+      .sum('duration as total_duration')
+      .first();
+
+    res.json(sumOfDuration);
+  } catch (error) {
+    res.status(500).json({ message: `Unable to find the sum of duration for activity name for the last 30 days: ${error.message}` });
+  }
+};
+
+const findSumOfDurationByActivityBetween31And60Days = async (req, res) => {
+  try {
+    const sumOfDuration = await knex('activities_logs')
+      .where({
+        activity_name: req.params.activity_name,
+      })
+      .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 60 DAY)'))
+      .andWhere('created_at', '<', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+      .sum('duration as total_duration')
+      .first();
+
+    res.json(sumOfDuration);
+  } catch (error) {
+    res.status(500).json({ message: `Unable to find the sum of duration for activity name between days 31 and 60: ${error.message}` });
+  }
+};
+
 
 
 module.exports = {
@@ -190,4 +224,6 @@ module.exports = {
   updateActivityLog,
   removeActivityLog,
   findLogsByActivity,
+  findSumOfDurationByActivityLast30Days,
+  findSumOfDurationByActivityBetween31And60Days,
 };

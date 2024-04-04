@@ -27,4 +27,12 @@ router
 router
     .route("/:activity_name/logs")
     .get(activitiesController.findLogsByActivity);
+
+router
+    .route("/:activity_name/logs/this_month")
+    .get(activitiesController.findSumOfDurationByActivityLast30Days);
+
+router
+    .route("/:activity_name/logs/last_month")
+    .get(activitiesController.findSumOfDurationByActivityBetween31And60Days);
 module.exports = router;

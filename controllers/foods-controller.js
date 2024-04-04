@@ -165,6 +165,38 @@ const findLogsByFood = async (req, res) => {
       res.status(500).json({ message: `Unable to find logs with food name: ${err.message}` });
     }
   };
+  const findSumOfQuantityByFoodLast30Days = async (req, res) => {
+    try {
+      const sumOfQuantity = await knex('foods_logs')
+        .where({
+          food_name: req.params.food_name,
+        })
+        .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+        .sum('quantity as total_quantity')
+        .first();
+  
+      res.json(sumOfQuantity);
+    } catch (error) {
+      res.status(500).json({ message: `Unable to find the sum of quantity for food name for the last 30 days: ${error.message}` });
+    }
+  };
+  
+  const findSumOfQuantityByFoodBetween31And60Days = async (req, res) => {
+    try {
+      const sumOfQuantity = await knex('foods_logs')
+        .where({
+          food_name: req.params.food_name,
+        })
+        .andWhere('created_at', '>=', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 60 DAY)'))
+        .andWhere('created_at', '<', knex.raw('DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)'))
+        .sum('quantity as total_quantity')
+        .first();
+  
+      res.json(sumOfQuantity);
+    } catch (error) {
+      res.status(500).json({ message: `Unable to find the sum of quantity for food name between days 31 and 60: ${error.message}` });
+    }
+  };
   
 
 module.exports = {
@@ -179,4 +211,6 @@ module.exports = {
   updateFoodLog,
   removeFoodLog,
   findLogsByFood,
+  findSumOfQuantityByFoodLast30Days,
+  findSumOfQuantityByFoodBetween31And60Days,
 };
